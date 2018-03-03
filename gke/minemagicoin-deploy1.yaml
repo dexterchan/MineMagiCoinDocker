@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: minemagicoinpod1
+  labels:
+    app: minemagicoinpod1
+
+# The traderepository frontend replica set ensures that at least 3
+# instances of the traderepository app are running on the cluster.
+# For more info about Pods see:
+#   https://cloud.google.com/container-engine/docs/pods/
+spec:
+  replicas: 1
+
+  template:
+    metadata:
+      labels:
+        app: minemagicoinpod1
+
+    spec:
+      containers:
+      - name: minemagicoin
+        # Replace [GCLOUD_PROJECT] with your project ID.
+        image: gcr.io/dextergcptest1/minemagicoin:v1
+
+        # This setting makes nodes pull the docker image every time before
+        # starting the pod. This is useful when debugging, but should be turned
+        # off in production.
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "300Mi"
+            cpu: "200m"
+          limits:
+            memory: "1000Mi"
+        # The traderepository process listens on port 8080 for web traffic by default.
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: https
+          containerPort: 443
+        - name: grpc
+          containerPort: 3000
+        env:
+        - name: WORKER
+          value: "boargke0"
+        - name: WORKERPWD
+          value: "dockerboar!"
+        - name: JAVA_HEAP_OPTS
+          value: "-Xmx4g -Xms2g"
